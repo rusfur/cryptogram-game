@@ -1,0 +1,1221 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Криптограмма — тренировка мозга</title>
+  <style>
+    :root {
+      --bg: #0f1220;
+      --card: #171a2b;
+      --card2: #1c2140;
+      --text: #e8ecff;
+      --muted: #aab2dd;
+      --accent: #6ee7ff;
+      --good: #5cffb0;
+      --bad: #ff6b8a;
+      --warn: #ffd36e;
+      --border: rgba(255,255,255,0.10);
+      --shadow: 0 10px 30px rgba(0,0,0,0.35);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      color: var(--text);
+      background:
+        radial-gradient(1200px 600px at 10% 0%, rgba(110,231,255,0.10), transparent 55%),
+        radial-gradient(1000px 700px at 90% 10%, rgba(92,255,176,0.08), transparent 60%),
+        radial-gradient(900px 600px at 40% 90%, rgba(255,107,138,0.06), transparent 60%),
+        var(--bg);
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 18px 16px 8px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .topline {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: 0.3px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 13px;
+      user-select: none;
+    }
+
+    .pill b { color: var(--text); font-weight: 650; }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 8px 16px 24px;
+      display: grid;
+      grid-template-columns: 1.35fr 0.65fr;
+      gap: 14px;
+    }
+
+    @media (max-width: 900px) {
+      main { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card .hd {
+      padding: 14px 14px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .card .hd .title {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 240px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.2;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    button {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 9px 12px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: transform .05s ease, background .15s ease, border-color .15s ease;
+      user-select: none;
+    }
+    button:hover { background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.18); }
+    button:active { transform: translateY(1px); }
+    button.primary {
+      background: rgba(110,231,255,0.12);
+      border-color: rgba(110,231,255,0.35);
+    }
+    button.primary:hover { background: rgba(110,231,255,0.18); }
+    button.good {
+      background: rgba(92,255,176,0.12);
+      border-color: rgba(92,255,176,0.35);
+    }
+    button.warn {
+      background: rgba(255,211,110,0.10);
+      border-color: rgba(255,211,110,0.28);
+    }
+    button.bad {
+      background: rgba(255,107,138,0.10);
+      border-color: rgba(255,107,138,0.28);
+    }
+    button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    .body {
+      padding: 14px;
+    }
+
+    .cipherWrap {
+      display: grid;
+      gap: 12px;
+    }
+
+    .cipher {
+      background: rgba(0,0,0,0.18);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px;
+      font-family: var(--mono);
+      line-height: 1.35;
+      font-size: 16px;
+      min-height: 140px;
+      white-space: pre-wrap;
+    }
+
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      padding-top: 6px;
+    }
+
+    .cell {
+      width: 36px;
+      height: 44px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 2px;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cell.space, .cell.punct {
+      width: 16px;
+      background: transparent;
+      border-color: transparent;
+      cursor: default;
+    }
+    .cell.punct { width: 18px; }
+    .cell.punct span { opacity: .9; }
+
+    .cell .top {
+      font-size: 11px;
+      color: var(--muted);
+      opacity: .9;
+      letter-spacing: 0.2px;
+    }
+    .cell .bot {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .cell.active {
+      outline: 2px solid rgba(110,231,255,0.55);
+      border-color: rgba(110,231,255,0.45);
+      background: rgba(110,231,255,0.10);
+    }
+
+    .cell.mapped {
+      background: rgba(255,255,255,0.08);
+    }
+
+    .cell.correct::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(92,255,176,0.10);
+      pointer-events: none;
+    }
+    .cell.wrong::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(255,107,138,0.10);
+      pointer-events: none;
+    }
+
+    .panel {
+      display: grid;
+      gap: 12px;
+    }
+
+    .stats {
+      display: grid;
+      gap: 10px;
+    }
+
+    .statRow {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      flex: 1;
+      min-width: 130px;
+      background: rgba(0,0,0,0.18);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 10px 10px;
+    }
+
+    .stat .k { color: var(--muted); font-size: 12px; }
+    .stat .v { font-size: 18px; font-weight: 750; margin-top: 2px; }
+
+    .mapping {
+      background: rgba(0,0,0,0.18);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 10px;
+    }
+
+    .mapping h3 {
+      margin: 0 0 8px 0;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 650;
+    }
+
+    .mapGrid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+    }
+
+    .mapItem {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      font-family: var(--mono);
+      font-size: 13px;
+    }
+    .mapItem .left { color: var(--muted); }
+    .mapItem .right { font-weight: 800; letter-spacing: 0.3px; }
+
+    .kbd {
+      background: rgba(0,0,0,0.18);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 10px;
+    }
+    .kbd h3 {
+      margin: 0 0 8px 0;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 650;
+    }
+
+    .keys {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .key {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.06);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      font-family: var(--mono);
+      font-weight: 800;
+      user-select: none;
+    }
+    .key:hover { background: rgba(255,255,255,0.10); }
+    .key.special {
+      width: auto;
+      padding: 0 10px;
+      font-family: var(--sans);
+      font-weight: 650;
+      color: var(--muted);
+    }
+
+    .msg {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.3;
+      min-height: 42px;
+    }
+
+    .msg.ok { border-color: rgba(92,255,176,0.35); color: rgba(92,255,176,0.95); background: rgba(92,255,176,0.08); }
+    .msg.bad { border-color: rgba(255,107,138,0.35); color: rgba(255,107,138,0.95); background: rgba(255,107,138,0.08); }
+    .msg.warn { border-color: rgba(255,211,110,0.35); color: rgba(255,211,110,0.95); background: rgba(255,211,110,0.08); }
+
+    .footerNote {
+      padding: 10px 14px 14px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      border-top: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="topline">
+    <h1>Криптограмма — расшифруй фразу</h1>
+    <div class="pill">
+      Очки: <b id="scorePill">0</b> · Серия: <b id="streakPill">0</b>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- LEFT: puzzle -->
+  <section class="card">
+    <div class="hd">
+      <div class="title">
+        <div style="font-weight:750;">Загадка</div>
+        <div class="subtitle" id="puzzleMeta">Нажми на зашифрованную букву → выбери правильную</div>
+      </div>
+      <div class="actions">
+        <button class="primary" id="btnNew">Новая</button>
+        <button class="good" id="btnDaily">Ежедневная</button>
+        <button class="warn" id="btnHintLetter">Подсказка: буква (-20)</button>
+        <button class="warn" id="btnHintWord">Подсказка: слово (-50)</button>
+        <button class="bad" id="btnResetMap">Сброс</button>
+        <button id="btnCheck">Проверить</button>
+      </div>
+    </div>
+
+    <div class="body">
+      <div class="cipherWrap">
+        <div class="cipher" id="cipherText"></div>
+
+        <div>
+          <div class="subtitle">Рабочее поле (нажимай на блоки):</div>
+          <div class="grid" id="cipherGrid" aria-label="cipher grid"></div>
+        </div>
+
+        <div class="msg" id="msg">Выбери букву в тексте и назначь ей соответствие на клавиатуре снизу. Backspace — очистить выбранную букву.</div>
+      </div>
+    </div>
+
+    <div class="footerNote">
+      Подсказка: в криптограмме <b>одинаковые зашифрованные буквы</b> всегда означают <b>одинаковые настоящие буквы</b>.
+      Это игра на логику и внимательность.
+    </div>
+  </section>
+
+  <!-- RIGHT: panel -->
+  <aside class="card">
+    <div class="hd">
+      <div class="title">
+        <div style="font-weight:750;">Панель</div>
+        <div class="subtitle">Соответствия и клавиатура</div>
+      </div>
+      <div class="actions">
+        <button id="btnReveal">Показать ответ</button>
+      </div>
+    </div>
+
+    <div class="body panel">
+      <div class="stats">
+        <div class="statRow">
+          <div class="stat">
+            <div class="k">Прогресс</div>
+            <div class="v"><span id="progressVal">0</span>%</div>
+          </div>
+          <div class="stat">
+            <div class="k">Ошибок (проверка)</div>
+            <div class="v"><span id="errorsVal">0</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mapping">
+        <h3>Соответствия (шифр → буква)</h3>
+        <div class="mapGrid" id="mapGrid"></div>
+      </div>
+
+      <div class="kbd">
+        <h3>Клавиатура</h3>
+        <div class="keys" id="keys"></div>
+      </div>
+
+      <div class="msg" id="smallNote">
+        Совет: начни с частых букв — О, А, Е, И, Н, Т, С. Часто встречается слово «И», «НЕ», «НА», «В».
+      </div>
+    </div>
+  </aside>
+</main>
+
+<script>
+(() => {
+  // ====== DATA ======
+  // Можно расширять список фраз — чем больше, тем лучше.
+  // Важно: фразы на русском, без цифр (мы шифруем только буквы).
+  const QUOTES = [
+    "УСПЕХ ПРИХОДИТ К ТЕМ КТО ДЕЙСТВУЕТ",
+    "БОЛЬШОЙ ПУТЬ НАЧИНАЕТСЯ С ПЕРВОГО ШАГА",
+    "ЗНАНИЯ ЭТО СИЛА",
+    "СЕГОДНЯ ЛУЧШЕ ЧЕМ ЗАВТРА",
+    "ДИСЦИПЛИНА ВАЖНЕЕ МОТИВАЦИИ",
+    "ОШИБКИ ЭТО ЧАСТЬ ОБУЧЕНИЯ",
+    "МАЛЫЕ ШАГИ ДАЮТ БОЛЬШИЕ РЕЗУЛЬТАТЫ",
+    "ТЕРПЕНИЕ И ТРУД ВСЕ ПЕРЕТРУТ",
+    "КТО НЕ РИСКУЕТ ТОТ НЕ ВЫИГРЫВАЕТ",
+    "ПЛАН БЕЗ ДЕЙСТВИЯ ЭТО МЕЧТА",
+    "ЛУЧШЕ СДЕЛАТЬ ПЛОХО ЧЕМ НЕ СДЕЛАТЬ ВООБЩЕ",
+    "ДЕНЬГИ ЛЮБЯТ СЧЕТ",
+    "ДОВЕРЯЙ НО ПРОВЕРЯЙ",
+    "ВРЕМЯ ЭТО САМЫЙ ДОРОГОЙ РЕСУРС",
+    "ТЫ СТАНОВИШЬСЯ ТЕМ ЧТО ПОВТОРЯЕШЬ КАЖДЫЙ ДЕНЬ"
+  ];
+
+  const RU = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
+  const LETTER_SET = new Set(RU.split(""));
+
+  // ====== STATE ======
+  const STORAGE_KEY = "cryptogram_v1_state";
+  let state = loadState() || {
+    score: 0,
+    streak: 0,
+    lastSolvedDaily: null, // YYYY-MM-DD
+    current: null
+  };
+
+  // current puzzle structure:
+  // {
+  //   mode: "new" | "daily",
+  //   id: string,
+  //   plain: string,
+  //   cipher: string,
+  //   sub: { [plainLetter]: cipherLetter }, // encryption map
+  //   inv: { [cipherLetter]: plainLetter }, // correct inverse map
+  //   guess: { [cipherLetter]: plainLetter }, // player's mapping
+  //   revealed: Set(cipherLetter) // letters opened by hints (locked)
+  // }
+  if (!state.current) {
+    state.current = makeRandomPuzzle();
+    saveState();
+  }
+
+  // ====== DOM ======
+  const elCipherText = document.getElementById("cipherText");
+  const elCipherGrid = document.getElementById("cipherGrid");
+  const elMsg = document.getElementById("msg");
+  const elMapGrid = document.getElementById("mapGrid");
+  const elKeys = document.getElementById("keys");
+  const elProgressVal = document.getElementById("progressVal");
+  const elErrorsVal = document.getElementById("errorsVal");
+  const elScorePill = document.getElementById("scorePill");
+  const elStreakPill = document.getElementById("streakPill");
+  const elPuzzleMeta = document.getElementById("puzzleMeta");
+
+  const btnNew = document.getElementById("btnNew");
+  const btnDaily = document.getElementById("btnDaily");
+  const btnHintLetter = document.getElementById("btnHintLetter");
+  const btnHintWord = document.getElementById("btnHintWord");
+  const btnResetMap = document.getElementById("btnResetMap");
+  const btnCheck = document.getElementById("btnCheck");
+  const btnReveal = document.getElementById("btnReveal");
+
+  let activeCipherLetter = null; // selected cipher letter
+
+  // ====== UTIL ======
+  function todayISO() {
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth()+1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
+  function hashStringToInt(s) {
+    // simple deterministic hash
+    let h = 2166136261;
+    for (let i = 0; i < s.length; i++) {
+      h ^= s.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return (h >>> 0);
+  }
+
+  function seededRandom(seed) {
+    // mulberry32
+    let t = seed >>> 0;
+    return function() {
+      t += 0x6D2B79F5;
+      let x = Math.imul(t ^ (t >>> 15), 1 | t);
+      x ^= x + Math.imul(x ^ (x >>> 7), 61 | x);
+      return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function pickRandom(arr, rnd = Math.random) {
+    return arr[Math.floor(rnd() * arr.length)];
+  }
+
+  function normalizeText(s) {
+    // uppercase + collapse spaces
+    return s
+      .toUpperCase()
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function makeSubstitutionMap(rnd = Math.random) {
+    // creates a random permutation for RU letters; keeps letters mapped to different letters (no fixed points) where possible.
+    const letters = RU.split("");
+    const perm = letters.slice();
+
+    // Fisher-Yates shuffle
+    for (let i = perm.length - 1; i > 0; i--) {
+      const j = Math.floor(rnd() * (i + 1));
+      [perm[i], perm[j]] = [perm[j], perm[i]];
+    }
+
+    // avoid fixed points: if perm[i] === letters[i], try swap with next
+    for (let i = 0; i < letters.length; i++) {
+      if (perm[i] === letters[i]) {
+        const j = (i + 1) % letters.length;
+        [perm[i], perm[j]] = [perm[j], perm[i]];
+      }
+    }
+
+    const sub = {};
+    for (let i = 0; i < letters.length; i++) sub[letters[i]] = perm[i];
+    return sub;
+  }
+
+  function encrypt(plain, sub) {
+    let out = "";
+    for (const ch of plain) {
+      if (LETTER_SET.has(ch)) out += sub[ch];
+      else out += ch;
+    }
+    return out;
+  }
+
+  function invertMap(sub) {
+    const inv = {};
+    for (const [p, c] of Object.entries(sub)) inv[c] = p;
+    return inv;
+  }
+
+  function getUniqueCipherLetters(cipher) {
+    const set = new Set();
+    for (const ch of cipher) if (LETTER_SET.has(ch)) set.add(ch);
+    return Array.from(set).sort();
+  }
+
+  function getWordsIndices(text) {
+    // returns array of {start,end} index slices for words (letters only)
+    const res = [];
+    let i = 0;
+    while (i < text.length) {
+      while (i < text.length && !LETTER_SET.has(text[i])) i++;
+      if (i >= text.length) break;
+      const start = i;
+      while (i < text.length && LETTER_SET.has(text[i])) i++;
+      const end = i;
+      res.push({start, end});
+    }
+    return res;
+  }
+
+  function applyGuessToCipherText(cipher, guess) {
+    // produce display string where guessed letters shown, unknown as "·"
+    let out = "";
+    for (const ch of cipher) {
+      if (LETTER_SET.has(ch)) {
+        out += (guess[ch] || "·");
+      } else {
+        out += ch;
+      }
+    }
+    return out;
+  }
+
+  function countFilled(cipher, guess) {
+    let total = 0, filled = 0;
+    for (const ch of cipher) {
+      if (LETTER_SET.has(ch)) {
+        total++;
+        if (guess[ch]) filled++;
+      }
+    }
+    return { total, filled };
+  }
+
+  function showMessage(text, kind = "") {
+    elMsg.className = "msg" + (kind ? " " + kind : "");
+    elMsg.textContent = text;
+  }
+
+  function showSmallNote(text, kind = "") {
+    const el = document.getElementById("smallNote");
+    el.className = "msg" + (kind ? " " + kind : "");
+    el.textContent = text;
+  }
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      const s = JSON.parse(raw);
+
+      // revive Set
+      if (s?.current?.revealed && Array.isArray(s.current.revealed)) {
+        s.current.revealed = new Set(s.current.revealed);
+      } else if (s?.current?.revealed && typeof s.current.revealed === "object" && s.current.revealed !== null) {
+        // ignore
+      } else if (s?.current) {
+        s.current.revealed = new Set();
+      }
+      return s;
+    } catch {
+      return null;
+    }
+  }
+
+  function saveState() {
+    const s = structuredClone(state);
+    // serialize Set
+    if (s?.current?.revealed instanceof Set) s.current.revealed = Array.from(s.current.revealed);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+  }
+
+  // ====== PUZZLE BUILDERS ======
+  function makeRandomPuzzle() {
+    const plain = normalizeText(pickRandom(QUOTES));
+    const sub = makeSubstitutionMap(Math.random);
+    const cipher = encrypt(plain, sub);
+    return {
+      mode: "new",
+      id: "rnd_" + Date.now(),
+      plain,
+      cipher,
+      sub,
+      inv: invertMap(sub),
+      guess: {},
+      revealed: new Set()
+    };
+  }
+
+  function makeDailyPuzzle() {
+    const day = todayISO();
+    const seed = hashStringToInt("daily:" + day);
+    const rnd = seededRandom(seed);
+    const plain = normalizeText(pickRandom(QUOTES, rnd));
+    const sub = makeSubstitutionMap(rnd);
+    const cipher = encrypt(plain, sub);
+    return {
+      mode: "daily",
+      id: "daily_" + day,
+      plain,
+      cipher,
+      sub,
+      inv: invertMap(sub),
+      guess: {},
+      revealed: new Set()
+    };
+  }
+
+  // ====== RENDER ======
+  function render() {
+    // top pills
+    elScorePill.textContent = String(state.score);
+    elStreakPill.textContent = String(state.streak);
+
+    // meta
+    const modeLabel = state.current.mode === "daily" ? "Ежедневная" : "Обычная";
+    elPuzzleMeta.textContent = `${modeLabel} · Нажми на зашифрованную букву → выбери правильную`;
+
+    // cipher text (raw)
+    elCipherText.textContent =
+      "Шифр:\n" +
+      state.current.cipher +
+      "\n\nВаш ответ:\n" +
+      applyGuessToCipherText(state.current.cipher, state.current.guess);
+
+    // grid
+    buildCipherGrid();
+
+    // mapping panel
+    buildMappingPanel();
+
+    // keyboard
+    buildKeyboard();
+
+    // progress
+    const { total, filled } = countFilled(state.current.cipher, state.current.guess);
+    const pct = total ? Math.floor((filled / total) * 100) : 0;
+    elProgressVal.textContent = String(pct);
+
+    // errors reset
+    elErrorsVal.textContent = "0";
+
+    // hint buttons state
+    btnHintLetter.disabled = state.score < 20;
+    btnHintWord.disabled = state.score < 50;
+
+    // daily solved indicator
+    if (state.current.mode === "daily") {
+      const day = todayISO();
+      if (state.lastSolvedDaily === day) {
+        showSmallNote("Сегодняшняя ежедневная криптограмма уже решена. Можно тренироваться в обычном режиме 🙂", "ok");
+      } else {
+        showSmallNote("Ежедневная задача: реши фразу сегодня и получи бонус +100 очков!", "");
+      }
+    } else {
+      showSmallNote("Совет: начни с частых букв — О, А, Е, И, Н, Т, С. Часто встречается слово «И», «НЕ», «НА», «В».", "");
+    }
+  }
+
+  function buildCipherGrid() {
+    elCipherGrid.innerHTML = "";
+    const cipher = state.current.cipher;
+
+    for (let i = 0; i < cipher.length; i++) {
+      const ch = cipher[i];
+
+      if (ch === " ") {
+        const div = document.createElement("div");
+        div.className = "cell space";
+        elCipherGrid.appendChild(div);
+        continue;
+      }
+
+      if (!LETTER_SET.has(ch)) {
+        const div = document.createElement("div");
+        div.className = "cell punct";
+        const span = document.createElement("span");
+        span.textContent = ch;
+        div.appendChild(span);
+        elCipherGrid.appendChild(div);
+        continue;
+      }
+
+      const top = ch; // cipher letter
+      const bot = state.current.guess[ch] || "·";
+
+      const div = document.createElement("div");
+      div.className = "cell" + (state.current.guess[ch] ? " mapped" : "");
+      div.dataset.c = ch;
+
+      if (activeCipherLetter === ch) div.classList.add("active");
+
+      const t = document.createElement("div");
+      t.className = "top";
+      t.textContent = top;
+
+      const b = document.createElement("div");
+      b.className = "bot";
+      b.textContent = bot;
+
+      div.appendChild(t);
+      div.appendChild(b);
+
+      div.addEventListener("click", () => {
+        if (activeCipherLetter === ch) {
+          activeCipherLetter = null;
+        } else {
+          activeCipherLetter = ch;
+        }
+        render();
+      });
+
+      elCipherGrid.appendChild(div);
+    }
+  }
+
+  function buildMappingPanel() {
+    elMapGrid.innerHTML = "";
+    const letters = getUniqueCipherLetters(state.current.cipher);
+    const guess = state.current.guess;
+
+    for (const c of letters) {
+      const item = document.createElement("div");
+      item.className = "mapItem";
+      item.title = "Нажми, чтобы выбрать букву в тексте";
+
+      const left = document.createElement("div");
+      left.className = "left";
+      left.textContent = c + " →";
+
+      const right = document.createElement("div");
+      right.className = "right";
+      right.textContent = guess[c] || "·";
+
+      item.appendChild(left);
+      item.appendChild(right);
+
+      item.addEventListener("click", () => {
+        activeCipherLetter = c;
+        render();
+      });
+
+      elMapGrid.appendChild(item);
+    }
+  }
+
+  function buildKeyboard() {
+    elKeys.innerHTML = "";
+
+    const makeKey = (label, onClick, extraClass="") => {
+      const k = document.createElement("div");
+      k.className = "key" + (extraClass ? " " + extraClass : "");
+      k.textContent = label;
+      k.addEventListener("click", onClick);
+      return k;
+    };
+
+    // letter keys
+    for (const L of RU) {
+      const k = makeKey(L, () => assignLetter(L));
+      elKeys.appendChild(k);
+    }
+
+    // special keys
+    elKeys.appendChild(makeKey("⌫", () => clearActive(), "special"));
+    elKeys.appendChild(makeKey("Случ.", () => smartRandomFillOne(), "special"));
+    elKeys.appendChild(makeKey("Очистить всё", () => resetMap(), "special"));
+  }
+
+  // ====== GAME ACTIONS ======
+  function assignLetter(plainLetter) {
+    if (!activeCipherLetter) {
+      showMessage("Сначала выбери зашифрованную букву в тексте (верхняя маленькая буква).", "warn");
+      return;
+    }
+
+    // If this cipher letter is revealed (locked), block manual changes
+    if (state.current.revealed.has(activeCipherLetter)) {
+      showMessage("Эта буква открыта подсказкой и заблокирована. Выбери другую.", "warn");
+      return;
+    }
+
+    // prevent mapping two cipher letters to same plain letter (optional but helpful)
+    // if some other cipher already mapped to this plainLetter, we can swap or deny.
+    const existing = Object.entries(state.current.guess).find(([c, p]) => p === plainLetter && c !== activeCipherLetter);
+    if (existing) {
+      showMessage(`Буква "${plainLetter}" уже назначена для "${existing[0]}". Сначала очисти её (⌫) или выбери другую букву.`, "warn");
+      return;
+    }
+
+    state.current.guess[activeCipherLetter] = plainLetter;
+    saveState();
+    showMessage(`Назначено: ${activeCipherLetter} → ${plainLetter}`, "");
+    render();
+  }
+
+  function clearActive() {
+    if (!activeCipherLetter) {
+      showMessage("Сначала выбери зашифрованную букву в тексте.", "warn");
+      return;
+    }
+    if (state.current.revealed.has(activeCipherLetter)) {
+      showMessage("Эта буква открыта подсказкой и не очищается.", "warn");
+      return;
+    }
+    delete state.current.guess[activeCipherLetter];
+    saveState();
+    showMessage(`Очищено: ${activeCipherLetter}`, "");
+    render();
+  }
+
+  function resetMap() {
+    const keep = {};
+    // keep revealed letters
+    for (const c of state.current.revealed) {
+      keep[c] = state.current.inv[c];
+    }
+    state.current.guess = keep;
+    activeCipherLetter = null;
+    saveState();
+    showMessage("Сброшено. Открытые подсказками буквы сохранены.", "");
+    render();
+  }
+
+  function smartRandomFillOne() {
+    // fill one random cipher letter with a random not-yet-used plain letter
+    const letters = getUniqueCipherLetters(state.current.cipher);
+    const freeCipher = letters.filter(c => !state.current.guess[c] && !state.current.revealed.has(c));
+    if (freeCipher.length === 0) {
+      showMessage("Нет свободных букв для случайного заполнения.", "warn");
+      return;
+    }
+    const c = freeCipher[Math.floor(Math.random() * freeCipher.length)];
+    const usedPlain = new Set(Object.values(state.current.guess));
+    const freePlain = RU.split("").filter(p => !usedPlain.has(p));
+    if (freePlain.length === 0) return;
+    const p = freePlain[Math.floor(Math.random() * freePlain.length)];
+    state.current.guess[c] = p;
+    activeCipherLetter = c;
+    saveState();
+    showMessage(`Случайно: ${c} → ${p} (можно изменить)`, "");
+    render();
+  }
+
+  function checkSolution() {
+    const cipher = state.current.cipher;
+    const guess = state.current.guess;
+    const inv = state.current.inv;
+
+    let errors = 0;
+    let compared = 0;
+
+    // mark grid cells as correct/wrong based on current guesses
+    const cells = elCipherGrid.querySelectorAll(".cell[data-c]");
+    cells.forEach(cell => {
+      cell.classList.remove("correct", "wrong");
+    });
+
+    for (let i = 0; i < cipher.length; i++) {
+      const ch = cipher[i];
+      if (!LETTER_SET.has(ch)) continue;
+
+      const g = guess[ch];
+      if (!g) continue;
+
+      compared++;
+      const correct = inv[ch];
+      if (g !== correct) errors++;
+    }
+
+    elErrorsVal.textContent = String(errors);
+
+    // paint cells
+    cells.forEach(cell => {
+      const c = cell.dataset.c;
+      if (!c) return;
+      const g = guess[c];
+      if (!g) return;
+      const correct = inv[c];
+      if (g === correct) cell.classList.add("correct");
+      else cell.classList.add("wrong");
+    });
+
+    if (compared === 0) {
+      showMessage("Пока нечего проверять: назначь хотя бы одну букву.", "warn");
+      return;
+    }
+
+    if (isFullySolved()) {
+      onSolved();
+      return;
+    }
+
+    if (errors === 0) showMessage("Проверка: пока ошибок нет. Продолжай 🙂", "ok");
+    else showMessage(`Проверка: найдено ошибок — ${errors}. Исправь выделенные буквы.`, "bad");
+  }
+
+  function isFullySolved() {
+    const inv = state.current.inv;
+    const letters = getUniqueCipherLetters(state.current.cipher);
+    // solved if every used cipher letter has correct mapping
+    for (const c of letters) {
+      const need = inv[c];
+      const g = state.current.guess[c];
+      if (!g || g !== need) return false;
+    }
+    // also ensure ciphertext letters count > 0
+    return letters.length > 0;
+  }
+
+  function onSolved() {
+    // award score
+    const base = 60;
+    let bonus = 0;
+
+    if (state.current.mode === "daily") {
+      const day = todayISO();
+      if (state.lastSolvedDaily !== day) {
+        bonus += 100;
+        state.lastSolvedDaily = day;
+      }
+    }
+
+    // streak: increment on solve
+    state.streak = (state.streak || 0) + 1;
+
+    // hint penalty already applied; now add reward
+    state.score += (base + bonus);
+
+    saveState();
+
+    showMessage(`✅ Решено! +${base}${bonus ? " +"+bonus+" (ежедневный бонус)" : ""} очков. Серия: ${state.streak}`, "ok");
+
+    // auto-generate next puzzle (in same mode if daily not solved? keep as is; user can choose)
+    // keep current so user can see; but we can offer next by enabling New button etc.
+    render();
+  }
+
+  function revealAnswer() {
+    // fill all correct
+    const inv = state.current.inv;
+    const letters = getUniqueCipherLetters(state.current.cipher);
+    for (const c of letters) state.current.guess[c] = inv[c];
+    activeCipherLetter = null;
+    saveState();
+    showMessage("Ответ показан. Теперь можешь нажать «Новая» и решать дальше.", "warn");
+    render();
+  }
+
+  function hintOneLetter() {
+    if (state.score < 20) {
+      showMessage("Не хватает очков на подсказку (нужно 20).", "warn");
+      return;
+    }
+
+    const letters = getUniqueCipherLetters(state.current.cipher);
+    const candidates = letters.filter(c => !state.current.guess[c]);
+    if (candidates.length === 0) {
+      showMessage("Все буквы уже назначены.", "warn");
+      return;
+    }
+
+    const c = candidates[Math.floor(Math.random() * candidates.length)];
+    const correct = state.current.inv[c];
+
+    state.score -= 20;
+    state.current.guess[c] = correct;
+    state.current.revealed.add(c); // lock this mapping
+    activeCipherLetter = c;
+    saveState();
+
+    showMessage(`Подсказка: ${c} → ${correct} (заблокировано)`, "ok");
+    render();
+  }
+
+  function hintOneWord() {
+    if (state.score < 50) {
+      showMessage("Не хватает очков на подсказку (нужно 50).", "warn");
+      return;
+    }
+
+    // choose a word in cipher and reveal all its letters (those not yet guessed)
+    const cipher = state.current.cipher;
+    const words = getWordsIndices(cipher);
+    if (words.length === 0) {
+      showMessage("Не удалось найти слово для подсказки.", "warn");
+      return;
+    }
+
+    // pick a word with some unknown letters
+    const shuffled = words.slice().sort(() => Math.random() - 0.5);
+    let target = null;
+    for (const w of shuffled) {
+      let hasUnknown = false;
+      for (let i = w.start; i < w.end; i++) {
+        const ch = cipher[i];
+        if (LETTER_SET.has(ch) && !state.current.guess[ch]) { hasUnknown = true; break; }
+      }
+      if (hasUnknown) { target = w; break; }
+    }
+
+    if (!target) {
+      showMessage("Все слова уже фактически раскрыты (буквы назначены).", "warn");
+      return;
+    }
+
+    state.score -= 50;
+
+    for (let i = target.start; i < target.end; i++) {
+      const c = cipher[i];
+      if (!LETTER_SET.has(c)) continue;
+      const correct = state.current.inv[c];
+      state.current.guess[c] = correct;
+      state.current.revealed.add(c);
+    }
+
+    activeCipherLetter = null;
+    saveState();
+
+    showMessage("Подсказка: одно слово раскрыто (буквы заблокированы).", "ok");
+    render();
+  }
+
+  // ====== BUTTONS ======
+  btnNew.addEventListener("click", () => {
+    state.current = makeRandomPuzzle();
+    activeCipherLetter = null;
+    saveState();
+    showMessage("Новая криптограмма создана. Удачи!", "");
+    render();
+  });
+
+  btnDaily.addEventListener("click", () => {
+    state.current = makeDailyPuzzle();
+    activeCipherLetter = null;
+
+    // If user already solved today's daily, keep their score/streak but still allow play
+    saveState();
+    showMessage("Ежедневная криптограмма загружена.", "");
+    render();
+  });
+
+  btnHintLetter.addEventListener("click", hintOneLetter);
+  btnHintWord.addEventListener("click", hintOneWord);
+  btnResetMap.addEventListener("click", resetMap);
+  btnCheck.addEventListener("click", checkSolution);
+  btnReveal.addEventListener("click", revealAnswer);
+
+  // ====== KEYBOARD EVENTS ======
+  window.addEventListener("keydown", (e) => {
+    const key = e.key;
+
+    if (key === "Backspace") {
+      e.preventDefault();
+      clearActive();
+      return;
+    }
+    if (key === "Escape") {
+      activeCipherLetter = null;
+      showMessage("Выбор снят.", "");
+      render();
+      return;
+    }
+
+    // allow typing russian letters
+    const upper = key.toUpperCase();
+    if (upper.length === 1 && LETTER_SET.has(upper)) {
+      assignLetter(upper);
+      return;
+    }
+  });
+
+  // ====== INIT ======
+  // ensure revealed set exists after load
+  if (!(state.current.revealed instanceof Set)) {
+    state.current.revealed = new Set(Array.isArray(state.current.revealed) ? state.current.revealed : []);
+  }
+
+  render();
+
+})();
+</script>
+</body>
+</html>
